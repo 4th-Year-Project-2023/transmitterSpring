@@ -6,16 +6,13 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PublisherClientTest {
+class MsgDataTest {
 
     @Test
-    void createMsg() {
-
-
+    void convertToJson() {
         String expectedJsonString = "{\n  \"commands\" : [ \"neofetch>>cc.out\" ]\n}";
         MsgData msgData = new MsgData();
         msgData.commands= Arrays.asList("neofetch>>cc.out");
         assertEquals(expectedJsonString,msgData.convertToJson());
     }
 }
-
