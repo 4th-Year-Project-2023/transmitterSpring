@@ -30,8 +30,10 @@ public class MsgData {
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = "";
+        log.debug("String before conversion: "+json);
         try {
             json = ow.writeValueAsString(this);
+            log.debug("String after conversion: "+json);
         } catch (JsonProcessingException jsonProcessingException) {
             log.error("Could not get string format for object.", jsonProcessingException);
         }

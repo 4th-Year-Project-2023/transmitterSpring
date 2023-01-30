@@ -33,6 +33,7 @@ public class PublisherClient implements Runnable{
 
     @Autowired
     MsgData msgData ;
+
     @Autowired
     GetParameter getParameter;
 
@@ -69,8 +70,12 @@ public class PublisherClient implements Runnable{
     public void run() {
         Thread.currentThread().setName("publisher client");
 
+
+
+
+
         try {
-            getParameter.printParam("senderUserName");
+//            getParameter.printParam("mqtt.topic");
             msgData.setCommands(Arrays.asList(commands.split(",")));
             byte[] messageBytes = msgData.convertToJson().getBytes();
 //            log.info("Publishing message");
