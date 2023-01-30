@@ -23,9 +23,18 @@ public class PublisherClient implements Runnable{
     @Value("${commands}")
     private String commands;
 
+    @Value("${senderUserName}")
+    private String senderUserName;
+
+    @Value("${senderPassword}")
+    private String senderPassword;
+
+
 
     @Autowired
     MsgData msgData ;
+    @Autowired
+    GetParameter getParameter;
 
     private IMqttClient mqttClient;
 
@@ -41,6 +50,8 @@ public class PublisherClient implements Runnable{
                     "publisher_greg" + ThreadLocalRandom.current().nextLong(),new MemoryPersistence());
 
             MqttConnectOptions options = new MqttConnectOptions();
+            options.setUserName(senderUserName);
+            options.setPassword(senderPassword.toCharArray());
             options.setAutomaticReconnect(true);
             options.setCleanSession(false);
             options.setMaxInflight(3);
@@ -57,7 +68,9 @@ public class PublisherClient implements Runnable{
     @Override
     public void run() {
         Thread.currentThread().setName("publisher client");
+
         try {
+            getParameter.printParam("senderUserName");
             msgData.setCommands(Arrays.asList(commands.split(",")));
             byte[] messageBytes = msgData.convertToJson().getBytes();
 //            log.info("Publishing message");
