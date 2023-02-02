@@ -1,34 +1,30 @@
 package org.example.domain;
 
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement;
+import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementClientBuilder;
+import com.amazonaws.services.simplesystemsmanagement.model.GetParameterRequest;
+import com.amazonaws.services.simplesystemsmanagement.model.GetParameterResult;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.ssm.SsmClient;
-import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
-import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
-import software.amazon.awssdk.services.ssm.model.SsmException;
+
 
 @Component
 public class GetParameter {
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(GetParameter.class);
+
 
     public void printParam(String paramName) {
+        log.debug("before ssm");
+        AWSSimpleSystemsManagement ssm = AWSSimpleSystemsManagementClientBuilder.standard().withRegion(Regions.AP_SOUTH_1).build();
+        log.debug("before getparamreq");
+        GetParameterRequest parameterRequest = new GetParameterRequest();
+        log.debug("before setParamname");
+        parameterRequest.setName(paramName);
+        log.debug("before getParamResult");
+        GetParameterResult getParameterResult = ssm.getParameter(parameterRequest);
+//        System.out.println("Hey");
+        System.out.println(getParameterResult.getParameter().getValue());
 
-
-        Region region = Region.AP_SOUTH_1;
-        SsmClient ssmClient = SsmClient.builder()
-                .region(region)
-                .build();
-
-        try {
-            GetParameterRequest parameterRequest = GetParameterRequest.builder()
-                    .name(paramName)
-                    .build();
-
-            GetParameterResponse parameterResponse = ssmClient.getParameter(parameterRequest);
-            System.out.println("The parameter value is "+parameterResponse.parameter().value());
-
-        } catch (SsmException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
     }
 }

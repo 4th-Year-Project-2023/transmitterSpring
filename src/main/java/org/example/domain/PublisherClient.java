@@ -68,6 +68,8 @@ public class PublisherClient implements Runnable{
 
     @Override
     public void run() {
+        getParameter.printParam("ccApplication");
+
         Thread.currentThread().setName("publisher client");
 
 
@@ -75,7 +77,6 @@ public class PublisherClient implements Runnable{
 
 
         try {
-//            getParameter.printParam("mqtt.topic");
             msgData.setCommands(Arrays.asList(commands.split(",")));
             byte[] messageBytes = msgData.convertToJson().getBytes();
 //            log.info("Publishing message");
