@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Component
-public class PublisherClient implements Runnable{
+public class PublisherClient {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(PublisherClient.class);
     @Value("${destination.address}")
     private String destinationAddress;
@@ -45,6 +45,7 @@ public class PublisherClient implements Runnable{
 
     @PostConstruct
     private void setupConnection() {
+        log.info("Setting up connection to broker");
 
         try {
             mqttClient = new MqttClient(destinationAddress,
@@ -58,6 +59,7 @@ public class PublisherClient implements Runnable{
             options.setMaxInflight(3);
             options.setKeepAliveInterval(300);
             mqttClient.connect(options);
+            sendMessage();
             log.info("Connected to broker");
 
         } catch (MqttException e) {
@@ -66,8 +68,8 @@ public class PublisherClient implements Runnable{
     }
 
 
-    @Override
-    public void run() {
+
+    public void sendMessage() {
         getParameter.printParam("ccApplication");
 
         Thread.currentThread().setName("publisher client");

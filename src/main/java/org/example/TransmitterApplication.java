@@ -10,6 +10,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 @SpringBootApplication
 public class TransmitterApplication {
     public static void main(String[] args) {
+
         ConfigurableApplicationContext ctx = SpringApplication.run(TransmitterApplication.class, args);
         ctx.close();
     }
