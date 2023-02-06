@@ -13,8 +13,8 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Component
-public class PublisherClient {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(PublisherClient.class);
+public class RelayStation {
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(RelayStation.class);
 
     private String mqttBrokerAddress;
 
@@ -36,6 +36,9 @@ public class PublisherClient {
 
     @Autowired
     ParameterExtractor parameterExtractor;
+
+//    @Autowired
+//    OutputReceiverCallback outputReceiverCallback;
 
 
     private IMqttClient mqttClient;
@@ -98,6 +101,18 @@ public class PublisherClient {
         }
 
     }
+
+//    public void receiveMessage()
+//    {
+//        try {
+//            mqttClient.subscribe(mqttTopic);
+//        } catch (MqttException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        mqttClient.setCallback(outputReceiverCallback);
+//    }
+
 
 
     public String getMqttBrokerAddress() {
