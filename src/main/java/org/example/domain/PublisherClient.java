@@ -2,6 +2,7 @@ package org.example.domain;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.example.utils.ParameterExtractor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,74 +15,78 @@ import java.util.concurrent.ThreadLocalRandom;
 @Component
 public class PublisherClient {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(PublisherClient.class);
-    @Value("${destination.address}")
-    private String destinationAddress;
 
-    @Value("${mqtt.topic}")
+    private String mqttBrokerAddress;
+
+
     private String mqttTopic;
+
+
+    private String brokerUserName;
+
+
+    private String brokerPassword;
 
     @Value("${commands}")
     private String commands;
 
-    @Value("${senderUserName}")
-    private String senderUserName;
-
-    @Value("${senderPassword}")
-    private String senderPassword;
-
-
 
     @Autowired
-    MsgData msgData ;
+    MsgData msgData;
 
     @Autowired
-    GetParameter getParameter;
+    ParameterExtractor parameterExtractor;
+
 
     private IMqttClient mqttClient;
 
 
-
+    private void initializeParameters() {
+        parameterExtractor.initializeParameters();
+        mqttBrokerAddress = parameterExtractor.getApplicationProperties().getMqttServerAddress();
+        mqttTopic = parameterExtractor.getApplicationProperties().getMqttTopicName();
+        brokerUserName = parameterExtractor.getApplicationProperties().getBrokerUserName();
+        brokerPassword = parameterExtractor.getApplicationProperties().getBrokerPassword();
+    }
 
 
     @PostConstruct
     private void setupConnection() {
+
+        initializeParameters();
+
         log.info("Setting up connection to broker");
 
         try {
-            mqttClient = new MqttClient(destinationAddress,
-                    "publisher_greg" + ThreadLocalRandom.current().nextLong(),new MemoryPersistence());
+            mqttClient = new MqttClient(mqttBrokerAddress,
+                    "publisher_greg" + ThreadLocalRandom.current().nextLong(), new MemoryPersistence());
 
             MqttConnectOptions options = new MqttConnectOptions();
-            options.setUserName(senderUserName);
-            options.setPassword(senderPassword.toCharArray());
+            options.setUserName(brokerUserName);
+            options.setPassword(brokerPassword.toCharArray());
             options.setAutomaticReconnect(true);
             options.setCleanSession(false);
             options.setMaxInflight(3);
             options.setKeepAliveInterval(300);
             mqttClient.connect(options);
-            sendMessage();
             log.info("Connected to broker");
+            sendMessage();
 
         } catch (MqttException e) {
             log.error("Could not instantiate client-> ", e);
         }
+
     }
 
 
-
     public void sendMessage() {
-        getParameter.printParam("ccApplication");
+
 
         Thread.currentThread().setName("publisher client");
-
-
-
-
 
         try {
             msgData.setCommands(Arrays.asList(commands.split(",")));
             byte[] messageBytes = msgData.convertToJson().getBytes();
-//            log.info("Publishing message");
             mqttClient.publish(mqttTopic, new MqttMessage(messageBytes));
             log.info("Published message ");
             mqttClient.disconnect();
@@ -95,13 +100,12 @@ public class PublisherClient {
     }
 
 
-
-    public String getDestinationAddress() {
-        return destinationAddress;
+    public String getMqttBrokerAddress() {
+        return mqttBrokerAddress;
     }
 
-    public void setDestinationAddress(String destinationAddress) {
-        this.destinationAddress = destinationAddress;
+    public void setMqttBrokerAddress(String mqttBrokerAddress) {
+        this.mqttBrokerAddress = mqttBrokerAddress;
     }
 
     public String getMqttTopic() {
