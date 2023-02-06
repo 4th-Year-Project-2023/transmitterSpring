@@ -14,7 +14,7 @@ public class MsgData {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MsgData.class);
 
 
-    public List<String> commands= new ArrayList<String>();
+    public List<String> commands = new ArrayList<String>();
 
 
     public List<String> getCommands() {
@@ -30,14 +30,14 @@ public class MsgData {
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = "";
-        log.debug("String before conversion: "+json);
+        log.debug("String before conversion: " + json);
         try {
             json = ow.writeValueAsString(this);
-            log.debug("String after conversion: "+json);
+            log.debug("String after conversion: " + json);
         } catch (JsonProcessingException jsonProcessingException) {
             log.error("Could not get string format for object.", jsonProcessingException);
         }
-        log.info("Converting object to JSON : "+json);
+        log.info("Converting object to JSON : " + json);
         return json;
     }
 
