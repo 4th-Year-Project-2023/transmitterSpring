@@ -21,6 +21,8 @@ public class RelayStation {
 
     private String mqttTopic;
 
+    private String mqttOutputTopicName;
+
 
     private String brokerUserName;
 
@@ -37,8 +39,8 @@ public class RelayStation {
     @Autowired
     ParameterExtractor parameterExtractor;
 
-//    @Autowired
-//    OutputReceiverCallback outputReceiverCallback;
+    @Autowired
+    OutputReceiverCallback outputReceiverCallback;
 
 
     private IMqttClient mqttClient;
@@ -48,6 +50,7 @@ public class RelayStation {
         parameterExtractor.initializeParameters();
         mqttBrokerAddress = parameterExtractor.getApplicationProperties().getMqttServerAddress();
         mqttTopic = parameterExtractor.getApplicationProperties().getMqttTopicName();
+        mqttOutputTopicName=parameterExtractor.getApplicationProperties().getMqttOutputTopicName();
         brokerUserName = parameterExtractor.getApplicationProperties().getBrokerUserName();
         brokerPassword = parameterExtractor.getApplicationProperties().getBrokerPassword();
     }
@@ -74,6 +77,7 @@ public class RelayStation {
             mqttClient.connect(options);
             log.info("Connected to broker");
             sendMessage();
+            receiveMessage();
 
         } catch (MqttException e) {
             log.error("Could not instantiate client-> ", e);
@@ -92,9 +96,7 @@ public class RelayStation {
             byte[] messageBytes = msgData.convertToJson().getBytes();
             mqttClient.publish(mqttTopic, new MqttMessage(messageBytes));
             log.info("Published message ");
-            mqttClient.disconnect();
-            log.info("Disconnecting client");
-            mqttClient.close();
+
 
         } catch (MqttException e) {
             log.error("Could not send msg.", e);
@@ -102,16 +104,30 @@ public class RelayStation {
 
     }
 
-//    public void receiveMessage()
-//    {
+    public void receiveMessage()
+    {
+
+        try {
+            mqttClient.subscribe(mqttOutputTopicName);
+//            log.info("Connected to broker");
+            log.info("Waiting for output");
+        } catch (MqttException e) {
+            throw new RuntimeException(e);
+        }
+
+        mqttClient.setCallback(outputReceiverCallback);
+//        System.out.println("Waiting at callback");
+
 //        try {
-//            mqttClient.subscribe(mqttTopic);
+//            mqttClient.disconnect();
+//            log.info("Disconnecting client");
+//            mqttClient.close();
 //        } catch (MqttException e) {
 //            throw new RuntimeException(e);
 //        }
-//
-//        mqttClient.setCallback(outputReceiverCallback);
-//    }
+
+
+    }
 
 
 

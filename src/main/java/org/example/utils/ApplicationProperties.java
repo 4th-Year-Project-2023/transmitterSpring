@@ -15,6 +15,8 @@ public class ApplicationProperties {
     @JsonProperty("mqtt.channel.name")
     private String mqttTopicName;
 
+    @JsonProperty("mqtt.output.channel.name")
+    private String mqttOutputTopicName;
 
     @JsonProperty("senderUserName")
     private String brokerUserName;
@@ -51,5 +53,13 @@ public class ApplicationProperties {
 
     public void setBrokerPassword(String brokerPassword) {
         this.brokerPassword = brokerPassword;
+    }
+
+    public String getMqttOutputTopicName() {
+        return mqttOutputTopicName;
+    }
+
+    public void setMqttOutputTopicName(String mqttOutputTopicName) {
+        this.mqttOutputTopicName = mqttOutputTopicName;
     }
 }
